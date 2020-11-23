@@ -2,6 +2,8 @@ const md5 = require('md5')
 
 class UserRepository {
 
+  // table = 'users'
+
   constructor(dao) {
     this.dao = dao
   }

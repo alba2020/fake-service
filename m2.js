@@ -8,10 +8,11 @@ function main() {
   const dao = new AppDAO('./users1.sqlite3')
   const userRepo = new UserRepository(dao)
 
-  userRepo.getById(21)
-    // .createTable()
-    // .then(() => userRepo.seed())
-    // .then(() => userRepo.getById(1))
+  // userRepo.getById(21)
+  userRepo
+    .createTable()
+    .then(() => userRepo.seed())
+    .then(() => userRepo.getById(1))
     .then(user => {
       if (!user) {
         throw 'User not found'
