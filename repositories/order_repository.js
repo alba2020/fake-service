@@ -1,5 +1,5 @@
 
-class OrderRepository {
+class OrdersRepository {
 
   constructor(dao) {
     this.dao = dao
@@ -14,8 +14,8 @@ class OrderRepository {
         link text,
         count integer,
         status string,
-        created_at DATETIME DEFAULT (datetime('now','localtime')),
-        `
+        created_at DATETIME DEFAULT (datetime('now','localtime'))
+        )`
     return this.dao.run(sql)
   }
 
@@ -38,4 +38,35 @@ class OrderRepository {
     )
   }
 
+  getAll() {
+    return this.dao.all(`SELECT * FROM orders`)
+  }
+
+  create(link, count) {
+    return this.dao.run(
+      `INSERT INTO orders (link, count) VALUES (?,?)`,
+      [link, count]
+    )
+  }
+
+  update(order) {
+    const { id, link, count, status } = order
+    return this.dao.run(
+      `UPDATE orders SET
+      link = COALESCE(?, link), 
+      count = COALESCE(?, count), 
+      status = COALESCE(?, status) 
+      WHERE id = ?`,
+      [link, count, status, id]
+    )
+  }
+
+  delete(id) {
+    return this.dao.run(
+      `DELETE FROM orders WHERE id = ?`,
+      [id]
+    )
+  }
 }
+
+module.exports = OrdersRepository

@@ -1,10 +1,9 @@
-var md5 = require('md5')
 
-class UsersController {
+class OrdersController {
 
   constructor(repo) {
     this.repo = repo
-    
+
     this.index = this.index.bind(this)
     this.show = this.show.bind(this)
     this.create = this.create.bind(this)
@@ -21,10 +20,10 @@ class UsersController {
   }
 
   index(req, res, next) {
-    this.repo.getAll().then(users => {
+    this.repo.getAll().then(orders => {
       res.json({
         "message": "success",
-        "data": users
+        "data": orders
       })
     })
       .catch(UsersController.printError(res))
@@ -32,13 +31,13 @@ class UsersController {
 
   show(req, res, next) {
     this.repo.getById(req.params.id)
-      .then(user => {
-        if (!user) {
-          throw new Error('User not found')
+      .then(order => {
+        if (!order) {
+          throw new Error('Order not found')
         }
         res.json({
           "message": "success",
-          "data": user
+          "data": order
         })
       })
       .catch(UsersController.printError(res))
@@ -46,28 +45,27 @@ class UsersController {
 
   create(req, res, next) {
     var errors = []
-    if (!req.body.password) {
-      errors.push("No password specified")
+    if (!req.body.link) {
+      errors.push("No link specified")
     }
-    if (!req.body.email) {
-      errors.push("No email specified")
+    if (!req.body.count) {
+      errors.push("No count specified")
     }
     if (errors.length) {
       res.status(400).json({ "error": errors.join(", ") })
       return
     }
 
-    const user = {
-      name: req.body.name,
-      email: req.body.email,
-      password: md5(req.body.password)
+    const order = {
+      link: req.body.link,
+      count: req.body.count,
     }
 
-    this.repo.create(user.name, user.email, user.password)
+    this.repo.create(order.link, order.count)
       .then(data => {
         res.json({
           "message": "success",
-          "data": user,
+          "data": order,
           "id": data.id
         })
       })
@@ -75,17 +73,17 @@ class UsersController {
   }
 
   update(req, res, next) {
-    var user = {
+    var order = {
       id: req.params.id,
-      name: req.body.name,
-      email: req.body.email,
-      password: req.body.password ? md5(req.body.password) : null
+      link: req.body.link,
+      count: req.body.count,
+      status: req.body.status
     }
-    this.repo.update(user)
+    this.repo.update(order)
       .then(data => {
         res.json({
           message: "success",
-          data: user,
+          data: order,
           changes: data.changes
         })
       })
@@ -102,6 +100,7 @@ class UsersController {
       })
       .catch(UsersController.printError(res))
   }
+
 }
 
-module.exports = UsersController
+module.exports = OrdersController
