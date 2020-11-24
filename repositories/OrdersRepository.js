@@ -1,8 +1,12 @@
 
-class OrdersRepository {
+const Repository = require('./Repository')
+
+class OrdersRepository extends Repository {
 
   constructor(dao) {
+    super()
     this.dao = dao
+    this.table = 'orders'
   }
 
   createTable() {
@@ -21,31 +25,23 @@ class OrdersRepository {
 
   seed() {
     console.log('seeding orders');
-    const insert = `
-    INSERT INTO orders(link, count) VALUES (?, ?)`
     return Promise.all([
-      this.dao.run(insert,
-        ['https://instagram.com/1', 100]),
-      this.dao.run(insert,
-        ['https://instagram.com/2', 200]),
+      this.create('https://instagram.com/1', 100),
+      this.create('https://instagram.com/2', 200),
     ])
-  }
-
-  getById(id) {
-    return this.dao.get(
-      `SELECT * FROM orders WHERE id = ?`,
-      [id]
-    )
-  }
-
-  getAll() {
-    return this.dao.all(`SELECT * FROM orders`)
   }
 
   create(link, count) {
     return this.dao.run(
-      `INSERT INTO orders (link, count) VALUES (?,?)`,
-      [link, count]
+      `INSERT INTO orders (link, count, status) VALUES (?,?,?)`,
+      [link, count, 'STATUS_CREATED']
+    )
+  }
+
+  setStatus(id, newStatus) {
+    return this.dao.run(
+      `UPDATE ${this.table} SET status = ? WHERE id = ?`,
+      [newStatus, id]
     )
   }
 
@@ -61,12 +57,6 @@ class OrdersRepository {
     )
   }
 
-  delete(id) {
-    return this.dao.run(
-      `DELETE FROM orders WHERE id = ?`,
-      [id]
-    )
-  }
 }
 
 module.exports = OrdersRepository

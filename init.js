@@ -1,8 +1,7 @@
-// my.js
+// init.js
 
-const Promise = require('bluebird')
 const AppDAO = require('./dao')
-const OrdersRepository = require('./repositories/order_repository')
+const OrdersRepository = require('./repositories/OrdersRepository')
 
 function init() {
   const dao = new AppDAO('./users1.sqlite3')

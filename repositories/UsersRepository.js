@@ -1,11 +1,15 @@
 const md5 = require('md5')
 
-class UserRepository {
+const Repository = require('./Repository')
+
+class UserRepository extends Repository {
 
   // table = 'users'
 
   constructor(dao) {
+    super()
     this.dao = dao
+    this.table = 'users'
   }
 
   createTable() {
@@ -33,20 +37,9 @@ class UserRepository {
     ])
   }
 
-  getById(id) {
-    return this.dao.get(
-      `SELECT * FROM users WHERE id = ?`,
-      [id]
-    )
-  }
-
-  getAll() {
-    return this.dao.all(`SELECT * FROM users`)
-  }
-
   create(name, email, password) {
     return this.dao.run(
-      `INSERT INTO users (name, email, password) VALUES (?,?,?)`,
+      `INSERT INTO ${this.table} (name, email, password) VALUES (?,?,?)`,
       [name, email, password]
     )
   }
@@ -63,12 +56,6 @@ class UserRepository {
     )
   }
 
-  delete(id) {
-    return this.dao.run(
-      `DELETE FROM users WHERE id = ?`,
-      [id]
-    )
-  }
 }
 
 module.exports = UserRepository

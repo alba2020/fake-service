@@ -1,6 +1,5 @@
 // main.js
 
-const Promise = require('bluebird')
 const AppDAO = require('./dao')
 const ProjectRepository = require('./repositories/project_repository')
 const TaskRepository = require('./repositories/task_repository')

@@ -1,6 +1,5 @@
 // my.js
 
-const Promise = require('bluebird')
 const AppDAO = require('./dao')
 const UserRepository = require('./repositories/user_repository')
 
