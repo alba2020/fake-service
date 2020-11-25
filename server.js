@@ -23,7 +23,7 @@ app.get("/", (req, res, next) => {
   res.json({ "message": "Ok" })
 })
 
-const dao = new AppDAO('./users1.sqlite3')
+const dao = new AppDAO('./db.sqlite3')
 const usersRepo = new UsersRepository(dao)
 const usersController = new UsersController(usersRepo)
 

@@ -37,7 +37,7 @@ class OrdersController {
         }
         res.json({
           "message": "success",
-          "data": order
+          "order": order
         })
       })
       .catch(OrdersController.printError(res))
@@ -67,22 +67,38 @@ class OrdersController {
 
   create(req, res, next) {
     const order = this.getValidatedData(req, res)
-    if (! order) return
+    if (!order) return
 
-    this.repo.create(order.link, order.count, order.target)
+    this.repo
+      .create(order.link, order.count, order.target)
       .then(data => {
         return this.repo.getById(data.id)
       })
       .then(order => {
-        // todo
+        
+        let completed = Math.round(order.count * order.target / 100)
+        let status = 'STATUS_UNKNOWN'
+
         setTimeout(() => {
-          console.log(`Order ${order.id} -> STATUS_COMPLETED`)
-          this.repo.setStatus(order.id, 'STATUS_COMPLETED')
+          if (order.target > 0 && order.target < 100) {
+            status = 'STATUS_RUNNING'
+          } else if (order.target === 100) {
+            status = 'STATUS_COMPLETED'
+          } else {
+            completed = 0
+            status = 'STATUS_ERROR'
+          }
+          console.log(`id ${order.id} [${completed}/${order.count}] -> ${status}`)
+          this.repo.update({
+            id: order.id,
+            completed: completed,
+            status: status
+          })
         }, 10000)
 
         res.json({
           "message": "success",
-          "data": order,
+          "order": order,
         })
       })
       .catch(OrdersController.printError(res))
@@ -93,6 +109,8 @@ class OrdersController {
       id: req.params.id,
       link: req.body.link,
       count: req.body.count,
+      target: req.body.target,
+      completed: req.body.completed,
       status: req.body.status
     }
     this.repo.update(order)

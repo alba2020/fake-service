@@ -28,8 +28,8 @@ class OrdersRepository extends Repository {
   seed() {
     console.log('seeding orders');
     return Promise.all([
-      this.create('https://instagram.com/1', 100),
-      this.create('https://instagram.com/2', 200),
+      this.create('https://instagram.com/1', 100, 100),
+      this.create('https://instagram.com/2', 200, 50),
     ])
   }
 
@@ -49,15 +49,16 @@ class OrdersRepository extends Repository {
   }
 
   update(order) {
-    const { id, link, count, completed, status } = order
+    const { id, link, count, target, completed, status } = order
     return this.dao.run(
       `UPDATE orders SET
       link = COALESCE(?, link), 
       count = COALESCE(?, count),
+      target = COALESCE(?, target),
       completed = COALESCE(?, completed),
       status = COALESCE(?, status) 
       WHERE id = ?`,
-      [link, count, completed, status, id]
+      [link, count, target, completed, status, id]
     )
   }
 

@@ -4,7 +4,7 @@ const AppDAO = require('./dao')
 const OrdersRepository = require('./repositories/OrdersRepository')
 
 function init() {
-  const dao = new AppDAO('./users1.sqlite3')
+  const dao = new AppDAO('./db.sqlite3')
   const ordersRepo = new OrdersRepository(dao)
 
   // userRepo.getById(21)
