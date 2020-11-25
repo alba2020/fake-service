@@ -39,8 +39,6 @@ const ordersCtrl = new OrdersController(ordersRepo)
 app.get("/api/orders", ordersCtrl.index)
 app.get("/api/orders/:id", ordersCtrl.show)
 app.post("/api/orders/", ordersCtrl.create)
-app.post("/api/orders/completed", ordersCtrl.completed)
-app.post("/api/orders/error", ordersCtrl.error)
 app.patch("/api/orders/:id", ordersCtrl.update)
 app.delete("/api/orders/:id", ordersCtrl.delete)
 

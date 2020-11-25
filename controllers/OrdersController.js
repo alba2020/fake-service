@@ -7,8 +7,6 @@ class OrdersController {
     this.index = this.index.bind(this)
     this.show = this.show.bind(this)
     this.create = this.create.bind(this)
-    this.completed = this.completed.bind(this)
-    this.error = this.error.bind(this)
     this.update = this.update.bind(this)
     this.delete = this.delete.bind(this)
   }
@@ -53,13 +51,17 @@ class OrdersController {
     if (!req.body.count) {
       errors.push("No count specified")
     }
+    if (!req.body.target) {
+      errors.push("No target specified")
+    }
     if (errors.length) {
       res.status(400).json({ "error": errors.join(", ") })
       return null
     }
     return {
       link: req.body.link,
-      count: req.body.count
+      count: req.body.count,
+      target: req.body.target
     }
   }
 
@@ -67,55 +69,15 @@ class OrdersController {
     const order = this.getValidatedData(req, res)
     if (! order) return
 
-    this.repo.create(order.link, order.count)
+    this.repo.create(order.link, order.count, order.target)
       .then(data => {
         return this.repo.getById(data.id)
       })
       .then(order => {
-        res.json({
-          "message": "success",
-          "data": order,
-        })
-      })
-      .catch(OrdersController.printError(res))
-  }
-
-  completed(req, res, next) {
-    const order = this.getValidatedData(req, res)
-    if (! order) return
-
-    this.repo.create(order.link, order.count)
-      .then(data => {
-        return this.repo.getById(data.id)
-      })
-      .then(order => {
-
+        // todo
         setTimeout(() => {
           console.log(`Order ${order.id} -> STATUS_COMPLETED`)
           this.repo.setStatus(order.id, 'STATUS_COMPLETED')
-        }, 10000)
-
-        res.json({
-          "message": "success",
-          "data": order,
-        })
-      })
-      .catch(OrdersController.printError(res))
-  }
-
-  error(req, res, next) {
-    const order = this.getValidatedData(req, res)
-    if (! order) return
-
-    this.repo.create(order.link, order.count)
-      .then(data => {
-        return this.repo.getById(data.id)
-      })
-      .then(order => {
-
-        setTimeout(() => {
-          console.log(`Order ${order.id} -> STATUS_ERROR`)
-          this.repo.setStatus(order.id, 'STATUS_ERROR')
         }, 10000)
 
         res.json({

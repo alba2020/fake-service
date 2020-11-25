@@ -13,11 +13,13 @@ class OrdersRepository extends Repository {
     console.log('creating table orders');
 
     const sql = `
-        CREATE TABLE IF NOT EXISTS orders (
+        CREATE TABLE IF NOT EXISTS ${this.table} (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         link text,
         count integer,
-        status string,
+        target integer,
+        completed integer default 0,
+        status string default 'STATUS_CREATED',
         created_at DATETIME DEFAULT (datetime('now','localtime'))
         )`
     return this.dao.run(sql)
@@ -31,10 +33,11 @@ class OrdersRepository extends Repository {
     ])
   }
 
-  create(link, count) {
+  create(link, count, target) {
     return this.dao.run(
-      `INSERT INTO orders (link, count, status) VALUES (?,?,?)`,
-      [link, count, 'STATUS_CREATED']
+      `INSERT INTO orders (link, count, target)
+       VALUES (?,?,?)`,
+      [link, count, target]
     )
   }
 
@@ -46,14 +49,15 @@ class OrdersRepository extends Repository {
   }
 
   update(order) {
-    const { id, link, count, status } = order
+    const { id, link, count, completed, status } = order
     return this.dao.run(
       `UPDATE orders SET
       link = COALESCE(?, link), 
-      count = COALESCE(?, count), 
+      count = COALESCE(?, count),
+      completed = COALESCE(?, completed),
       status = COALESCE(?, status) 
       WHERE id = ?`,
-      [link, count, status, id]
+      [link, count, completed, status, id]
     )
   }
 
